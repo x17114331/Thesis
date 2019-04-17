@@ -1,0 +1,142 @@
+// Block definition (there may be more than one block per file)
+FUNCTION_BLOCK congestion
+
+// Define input variables
+VAR_INPUT
+    P: REAL;
+    E: REAL;
+    D: REAL;	
+END_VAR
+
+// Define output variable
+VAR_OUTPUT
+    R: REAL;
+END_VAR
+
+// Fuzzify input variable 'P'
+FUZZIFY P
+    TERM L := (0,1) (2,0); 
+    TERM M := (0.5,0) (2.5,1) (4.5,0);
+    TERM H := (3,0) (5,1);
+END_FUZZIFY
+
+// Fuzzify input variable 'E'
+FUZZIFY E
+    TERM L := (0,1) (30,0); 
+    TERM M := (15,0) (50,1) (80,0);
+    TERM H := (70,0) (100,1);
+END_FUZZIFY
+
+// Fuzzify input variable 'D'
+FUZZIFY D
+    TERM L := (0,1) (0.5,0); 
+    TERM M := (0.2,0) (0.4,1) (0.6,0);
+    TERM H := (0.5,0) (1,1);
+END_FUZZIFY
+
+
+// Defzzzify output variable 'D'
+DEFUZZIFY R
+    TERM L := (0,1) (8,0);
+    TERM M := (3,0) (7,1) (15,0);
+    TERM H := (12,0) (20,1);
+    METHOD : COG;
+    // Default value is 0 (if no rule activates defuzzifier)
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+    // Use 'min' for 'and' (also implicit use 'max'
+    // for 'or' to fulfill DeMorgan's Law)
+    AND : MIN;
+    // Use 'min' activation method
+    ACT : MIN;
+    // Use 'max' accumulation method
+    ACCU : MAX;
+
+    RULE 1 : IF P IS L AND E IS L AND D IS L 
+                THEN R IS L;
+
+    RULE 2 : IF P IS L AND E IS L AND D IS M 
+                THEN R IS L;
+
+    RULE 3 : IF P IS L AND E IS L AND D IS H   
+                THEN R IS L;
+				
+    RULE 4 : IF P IS L AND E IS M AND D IS L   
+                THEN R IS L;
+
+    RULE 5 : IF P IS L AND E IS M AND D IS M
+                THEN R IS L;
+
+    RULE 6 : IF P IS L AND E IS M AND D IS H 
+                THEN R IS L;
+				
+    RULE 7 : IF P IS L AND E IS H AND D IS L 
+                THEN R IS M;
+
+    RULE 8 : IF P IS L AND E IS H AND D IS M   
+                THEN R IS M;
+
+    RULE 9 : IF P IS L AND E IS H AND D IS H 
+                THEN R IS M;
+
+    RULE 10 : IF P IS M AND E IS L AND D IS L   
+                THEN R IS L;
+
+    RULE 11 : IF P IS M AND E IS L AND D IS M  
+                THEN R IS L;
+				
+    RULE 12 : IF P IS M AND E IS L AND D IS H  
+                THEN R IS L;
+
+    RULE 13 : IF P IS M AND E IS M AND D IS L   
+                THEN R IS M;
+
+    RULE 14 : IF P IS M AND E IS M AND D IS M 
+                THEN R IS M;
+				
+    RULE 15 : IF P IS M AND E IS M AND D IS H 
+                THEN R IS L;
+
+    RULE 16 : IF P IS M AND E IS H AND D IS L     
+                THEN R IS M;
+
+    RULE 17 : IF P IS M AND E IS H AND D IS M  
+                THEN R IS L;
+
+    RULE 18 : IF P IS M AND E IS H AND D IS H 
+                THEN R IS L;
+
+    RULE 19 : IF P IS H AND E IS L AND D IS L 
+                THEN R IS L;
+				
+    RULE 20 : IF P IS H AND E IS L AND D IS M  
+                THEN R IS L;
+
+    RULE 21 : IF P IS H AND E IS L AND D IS H   
+                THEN R IS L;
+
+    RULE 22 : IF P IS H AND E IS M AND D IS L  
+                THEN R IS H;
+				
+    RULE 23 : IF P IS H AND E IS M AND D IS M 
+                THEN R IS H;
+
+    RULE 24 : IF P IS H AND E IS M AND D IS H   
+                THEN R IS M;
+				
+    RULE 25 : IF P IS H AND E IS H AND D IS L  
+                THEN R IS H;
+
+    RULE 26 : IF P IS H AND E IS H AND D IS M 
+                THEN R IS H;
+
+    RULE 27 : IF P IS H AND E IS H AND D IS H 
+                THEN R IS M;
+				
+    			
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
